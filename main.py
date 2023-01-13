@@ -1,10 +1,29 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+import openpyxl
+import os
 
 
 window = Tk()
 window.title("Data Entry form")
+
+
+def save_to_excel(data):
+    filepath = "D:\work\code\others\python\dataEntry\data.xlsx"
+
+    if not os.path.exists(filepath):
+        workbook = openpyxl.Workbook()
+        sheet = workbook.active
+        heading = ["FirstName", "LastName", "Title", "Age", "Nationality", "# Courses",
+                   "# Semesters", "Registration Status"]
+        sheet.append(heading)
+        workbook.save(filepath)
+
+    workbook = openpyxl.load_workbook(filepath)
+    sheet = workbook.active
+    sheet.append(data)
+    workbook.save(filepath)
 
 
 def enter_data():
@@ -30,6 +49,9 @@ def enter_data():
     print(first_name, last_name, title, age,
           nationality, number_courses, num_semesters,
           registered_check)
+
+    save_to_excel(data)
+
 
 
 frame = Frame(window)
