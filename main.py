@@ -1,29 +1,51 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import openpyxl
-import os
+# import openpyxl
+# import os
+import sqlite3
 
 
 window = Tk()
 window.title("Data Entry form")
 
 
-def save_to_excel(data):
-    filepath = "D:\work\code\others\python\dataEntry\data.xlsx"
+# def save_to_excel(data):
+#     filepath = "D:\work\code\others\python\dataEntry\data.xlsx"
+#
+#     if not os.path.exists(filepath):
+#         workbook = openpyxl.Workbook()
+#         sheet = workbook.active
+#         heading = ["FirstName", "LastName", "Title", "Age", "Nationality", "# Courses",
+#                    "# Semesters", "Registration Status"]
+#         sheet.append(heading)
+#         workbook.save(filepath)
+#
+#     workbook = openpyxl.load_workbook(filepath)
+#     sheet = workbook.active
+#     sheet.append(data)
+#     workbook.save(filepath)
 
-    if not os.path.exists(filepath):
-        workbook = openpyxl.Workbook()
-        sheet = workbook.active
-        heading = ["FirstName", "LastName", "Title", "Age", "Nationality", "# Courses",
-                   "# Semesters", "Registration Status"]
-        sheet.append(heading)
-        workbook.save(filepath)
+def save_to_database(first_name, last_name, title, age, nationality, registered_check, number_courses, num_semesters):
+    conn = sqlite3.connect('data.db')
 
-    workbook = openpyxl.load_workbook(filepath)
-    sheet = workbook.active
-    sheet.append(data)
-    workbook.save(filepath)
+    tbl_create_query = '''CREATE TABLE IF NOT EXISTS student_data
+        (firstname TEXT, lastname TEXT, title TEXT, age INT,
+        nationality TEXT, registration_status TEXT, num_courses INT, num_semesters INT)
+    '''
+    conn.execute(tbl_create_query)
+
+    data_insert_query = '''INSERT INTO student_data (firstname, lastname, title, age, nationality,
+    registration_status, num_courses, num_semesters) VALUES (?,?,?,?,?,?,?,?)        
+    '''
+    data_insert_turple = (first_name, last_name, title, age, nationality, registered_check, number_courses, num_semesters)
+
+    cursor = conn.cursor()
+    cursor.execute(data_insert_query, data_insert_turple)
+    conn.commit()
+
+
+    conn.close()
 
 
 def enter_data():
@@ -50,7 +72,8 @@ def enter_data():
           nationality, number_courses, num_semesters,
           registered_check)
 
-    save_to_excel(data)
+    # save_to_excel(data)
+    save_to_database(first_name, last_name, title, age, nationality, registered_check, number_courses, num_semesters)
 
 
 
